@@ -1,7 +1,11 @@
-# ocr
-PDF OCR Tool
-The PDF OCR Tool is a Python-based graphical user interface (GUI) application designed to convert PDF files into plain text. It extracts text from PDF files and employs Optical Character Recognition (OCR) when necessary to process images within the PDF. The tool supports processing individual PDF files or entire folders.
+The PDF OCR Tool is a Python-based GUI application designed to convert PDF files into plain text. It extracts text from PDF files and employs Optical Character Recognition (OCR) when necessary to process images within the PDF. The tool supports processing individual PDF files or entire folders.
 
+Table of Contents
+Features
+Installation
+Usage
+Support and Contribution
+License
 Features
 Graphical User Interface: Easily select and process PDF files or folders.
 Text Extraction: Directly extract text from PDF files when available.
@@ -44,4 +48,6 @@ The GUI will appear, allowing you to select PDF files or folders for processing.
 
 Support and Contribution
 If you encounter any issues or have suggestions for improvement, please feel free to open an issue or submit a pull request.
+
+
 
