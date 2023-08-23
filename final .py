@@ -124,3 +124,4 @@ pdf_tool_gui = PDFToolGUI(root, pdf_processor)
 root.mainloop()
 
 logging.info('Application exited')
+
