@@ -81,7 +81,8 @@ class PDFToolGUI:
         progress_bar["maximum"] = len(pdf_files)
         for filename in pdf_files:
             self.processor.process_pdf(filename, path)
-            progress_bar.step()
+            progress_bar.step()  # This line updates the progress bar
+            self.root.update_idletasks()  # This line ensures the GUI updates
         status_label.config(text="Processing complete.")
 
     def init_gui(self):
@@ -124,4 +125,5 @@ pdf_tool_gui = PDFToolGUI(root, pdf_processor)
 root.mainloop()
 
 logging.info('Application exited')
+
 
