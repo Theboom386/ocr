@@ -16,16 +16,17 @@ class PDFToolGUI:
         folder_path = filedialog.askdirectory()
         self.processor.output_directory = folder_path
         self.output_folder_path_label.config(text="Output Folder: " + folder_path)
+        self.check_start_button_state()
 
     def select_folder(self):
         folder_path = filedialog.askdirectory()
         self.folder_path_label.config(text="Folder: " + folder_path)
-        self.process_files(folder_path, is_folder=True)
+        self.check_start_button_state()
 
     def select_file(self):
         file_path = filedialog.askopenfilename(filetypes=[("PDF files", "*.pdf")])
         self.file_path_label.config(text="File: " + file_path)
-        self.process_files(file_path, is_folder=False)
+        self.check_start_button_state()
 
     def process_files(self, path, is_folder):
         # Check if the output directory has been selected
@@ -37,7 +38,9 @@ class PDFToolGUI:
         else:
             self.status_label.config(text="Output directory not selected. Processing aborted.")
 
-    def background_processing(self, path, is_folder):
+    # ...
+
+    def background_processing(self, path, is_folder):  # Indentation fixed to include method within the class
         logging.info(f"Processing files from {path}")
         if is_folder:
             pdf_files = [filename for filename in os.listdir(path) if filename.endswith(".pdf")]
@@ -48,10 +51,13 @@ class PDFToolGUI:
         self.progress_bar["maximum"] = len(pdf_files)
         for filename in pdf_files:
             self.processor.process_pdf(filename, path)
-            self.progress_bar.step()
+            self.root.after(0, self.progress_bar.step)  # Schedule the step update in the main thread
             self.root.update_idletasks()
             sleep(0.1)
         self.status_label.config(text="Processing complete.")
+
+    # ...
+
 
     def init_gui(self):
         logging.info("Initializing GUI")
@@ -76,6 +82,10 @@ class PDFToolGUI:
 
         output_folder_button = ttk.Button(frame, text="Select Output Folder", command=self.select_output_folder)
         output_folder_button.grid(row=2, column=0, pady=5, padx=5, sticky="ew")
+        
+        self.start_button = ttk.Button(self.root, text="Start Processing", command=self.start_processing, state=tk.DISABLED)
+        self.start_button.grid(row=8, column=0, pady=5, padx=5, sticky="ew")
+        
 
         # Labels for displaying selected paths
         self.folder_path_label = ttk.Label(frame, text="Folder: Not selected", wraplength=300)
@@ -94,3 +104,29 @@ class PDFToolGUI:
         # Progress bar for tracking progress
         self.progress_bar = ttk.Progressbar(frame, orient="horizontal", length=300, mode="determinate")
         self.progress_bar.grid(row=7, column=0, pady=5, padx=5, sticky="ew")
+
+    def check_start_button_state(self):
+        if self.folder_path_label.cget("text") != "Folder: Not selected" and \
+           self.output_folder_path_label.cget("text") != "Output Folder: Not selected":
+            self.start_button.config(state=tk.NORMAL)
+    
+    def start_processing(self):  # Indentation fixed to include method within the class
+        # Determine whether a folder or file has been selected
+        folder_selected = self.folder_path_label.cget("text") != "Folder: Not selected"
+        file_selected = self.file_path_label.cget("text") != "PDF File: Not selected"
+
+        # Path to the selected folder or file
+        path = None
+        is_folder = False
+
+        if folder_selected:
+            path = self.folder_path_label.cget("text")[len("Folder: "):]
+            is_folder = True
+        elif file_selected:
+            path = self.file_path_label.cget("text")[len("PDF File: "):]
+
+        # Start processing if a valid folder or file has been selected
+        if path:
+            self.process_files(path, is_folder)
+        else:
+            self.status_label.config(text="No folder or file selected. Processing aborted.")

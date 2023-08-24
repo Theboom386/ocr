@@ -2,7 +2,9 @@ from Logging_Setup import setup_logging
 from PDF_Processor import PDFProcessor
 from PDFToolGUI import PDFToolGUI
 
-
+import logging
+import threading
+from time import sleep
 import tkinter as tk
 from tqdm import tqdm
 
