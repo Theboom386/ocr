@@ -1,9 +1,9 @@
 import os
 import configparser
 import logging
+import threading
 from time import sleep
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
 import fitz
 import pytesseract
 import numpy as np
@@ -19,7 +19,6 @@ output_directory = config['DEFAULT']['OutputDirectory']
 
 # Logging setup
 logging.basicConfig(filename='app.log', filemode='w', level=logging.INFO, format='%(asctime)s - %(message)s')
-
 class PDFProcessor:
     def __init__(self, output_directory):
         self.output_directory = output_directory
@@ -53,7 +52,6 @@ class PDFProcessor:
                             pass
             except Exception as e:
                 logging.error(f"Error processing file {filename}: {e}")
-
 class PDFToolGUI:
     def __init__(self, root, processor):
         self.processor = processor
@@ -72,6 +70,9 @@ class PDFToolGUI:
 
     def process_files(self, path, is_folder):
         self.status_label.config(text="Processing...")
+        threading.Thread(target=self.background_processing, args=(path, is_folder)).start()
+
+    def background_processing(self, path, is_folder):
         logging.info(f"Processing files from {path}")
         if is_folder:
             pdf_files = [filename for filename in os.listdir(path) if filename.endswith(".pdf")]
@@ -92,7 +93,6 @@ class PDFToolGUI:
         frame = ttk.Frame(self.root, padding="10")
         frame.grid(row=0, column=0, sticky="wens")
 
-
         folder_button = ttk.Button(frame, text="Select Folder", command=self.select_folder)
         folder_button.grid(row=0, column=0, pady=5)
 
@@ -110,7 +110,6 @@ class PDFToolGUI:
 
         self.progress_bar = ttk.Progressbar(frame, orient="horizontal", length=300, mode="determinate")
         self.progress_bar.grid(row=5, column=0, pady=5)
-
 def main():
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
